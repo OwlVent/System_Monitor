@@ -1,0 +1,23 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "C++: Launch System Monitor (Windows)",
+            "type": "cppvsdbg", // Тип отладчика для MSVC
+            "request": "launch",
+            // Переменная ниже сама найдет путь к твоему скомпилированному exe
+            "program": "${command:cmake.launchTargetPath}", 
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [
+                {
+                    "name": "PATH",
+                    "value": "%PATH%"
+                }
+            ],
+            "console": "integratedTerminal", // Вывод будет во внутренний терминал VS Code
+            "preLaunchTask": "CMake: build" // Автоматически собирает проект перед запуском
+        }
+    ]
+}
