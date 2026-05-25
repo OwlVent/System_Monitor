@@ -75,6 +75,19 @@ int main() {
             cerr << "Error: could not get disk info. Code: " << GetLastError() << endl;
         }
 
+        ULONGLONG uptimeMS = GetTickCount64();
+        ULONGLONG totalSeconds = uptimeMS / 1000;
+        ULONGLONG seconds = totalSeconds % 60;
+        
+        ULONGLONG totalMinutes = totalSeconds / 60;
+        ULONGLONG minutes = totalMinutes % 60;
+        
+        ULONGLONG totalHours = totalMinutes / 60;
+        ULONGLONG hours = totalHours % 24;
+
+        cout << "\n------Time: Information------" << endl;
+        cout << "The computer is on: " << hours << " hr, " << minutes << " min, " << seconds << " sec" << endl;
+
         Sleep(10000);
         system("cls");
     }
