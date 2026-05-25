@@ -2,6 +2,7 @@
 #include <windows.h>
 #include <psapi.h>
 #include <vector>
+#include <iomanip>
 
 using namespace std;
 
@@ -10,29 +11,23 @@ unsigned long long FileTimeToInt64(const FILETIME& ft){
 }
 
 int main() {
+    DWORD size = 0;
+    GetUserNameA(NULL, &size);
+    string name(size, '\0');
+    GetUserNameA(&name[0], &size);
+    if (!name.empty()) name.resize(size - 1);
+
+    cout << fixed << setprecision(2);
+
     while (true){
-        DWORD size = 0;
-        GetUserNameA(NULL, &size);
+        cout << "Logged in as: " << name << endl;
 
-        if (size == 0) {
-            cerr << "Unable to determine username size" << endl;
-            return 1;
-        }
-
-        string name(size, '\0');
-        if(GetUserNameA(&name[0], &size)){
-            name.resize(size - 1);
-            cout << "PC name: " << name << endl;
-        }
-
-        // Используем структуру MEMORYSTATUSEX для получения информации о состоянии памяти
+        // ---- Блок RAM ----
         MEMORYSTATUSEX memInfo;
 
-        // Установка размера структуры
         memInfo.dwLength = sizeof(MEMORYSTATUSEX);
 
         if (GlobalMemoryStatusEx(&memInfo)) {
-            // Константа для перевода байтов в гигабайты
             const float GB = 1024 * 1024 * 1024.0f;
 
             cout << "\n------Memory: Information------" << endl;
@@ -44,7 +39,7 @@ int main() {
             cerr << "Error getting memory status. Error code: " << GetLastError() << endl;
         }
         
-        // Используем GetSystemTimes для получения информации о заполненности CPU
+        // ---- Блок CPU ----
         FILETIME idleTime, kernelTime, userTime;
         
         GetSystemTimes(&idleTime, &kernelTime, &userTime);
@@ -53,7 +48,7 @@ int main() {
         unsigned long long preKernel = FileTimeToInt64(kernelTime);
         unsigned long long preUser = FileTimeToInt64(userTime);
         
-        Sleep(3000);
+        Sleep(1000);
 
         GetSystemTimes(&idleTime, &kernelTime, &userTime);
 
@@ -75,6 +70,7 @@ int main() {
             cerr << "Error: could not get CPU info. Code: " << GetLastError() << endl;
         }
 
+        // ---- Блок DISK ----
         ULARGE_INTEGER freeBytesAvailable, totalNumberOfBytes, totalNumberOfFreeBytes;
 
         if (GetDiskFreeSpaceExA("C:\\", &freeBytesAvailable, &totalNumberOfBytes, &totalNumberOfFreeBytes)){ 
@@ -91,19 +87,14 @@ int main() {
             cerr << "Error: could not get disk info. Code: " << GetLastError() << endl;
         }
 
-        ULONGLONG uptimeMS = GetTickCount64();
-        ULONGLONG totalSeconds = uptimeMS / 1000;
-        ULONGLONG seconds = totalSeconds % 60;
-        
-        ULONGLONG totalMinutes = totalSeconds / 60;
-        ULONGLONG minutes = totalMinutes % 60;
-        
-        ULONGLONG totalHours = totalMinutes / 60;
-        ULONGLONG hours = totalHours % 24;
+        // ---- Блок UPTIME ----
+        ULONGLONG uptime = GetTickCount64() / 1000;
+        ULONGLONG days = uptime / 3600 / 24;
+        cout << "\n------ Uptime ------" << endl;
+        if (days > 0) cout << days << " days, ";
+        cout << uptime / 3600 % 24 << "h " << (uptime % 3600) / 60 << "m " << uptime % 60 << "s" << endl;
 
-        cout << "\n------Time: Information------" << endl;
-        cout << "The computer is on: " << hours << " hr, " << minutes << " min, " << seconds << " sec" << endl;
-
+        // ---- Блок PROCESSES ---- 
         cout << "\n------Processes: Information------" << endl;
         DWORD processIds[1024];
         DWORD bytesReturned;
@@ -121,7 +112,7 @@ int main() {
             cout << "Processes ID: " << processIds[i] << endl;
         }
 
-        Sleep(10000);
+        Sleep(2000);
         system("cls");
     }
     return 0;
