@@ -75,7 +75,7 @@ void getCPUInfo(){
     cout << "\n------CPU: Information------" << endl;
     if (totalSystemTime > 0) {
         double cpuLoad = (double)(totalSystemTime - deltaIdle) * 100.0 / totalSystemTime;
-        cout << "CPU Load: " << cpuLoad << "%" << endl;
+        cout << "CPU Load: " << cpuLoad << "%                " << endl;
     } else {
         cout << "CPU Load: 0.00%" << endl;
     }

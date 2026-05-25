@@ -7,6 +7,9 @@
     <ClCompile Include="C:\Users\vento\OneDrive\Documents\vs_project\System_Monitor\PCinfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="C:\Users\vento\OneDrive\Documents\vs_project\System_Monitor\consoleView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="C:\Users\vento\OneDrive\Documents\vs_project\System_Monitor\CMakeLists.txt" />

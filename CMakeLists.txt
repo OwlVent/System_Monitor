@@ -4,6 +4,7 @@ project(System_Monitor)
 set(CMAKE_CXX_STANDARD 26)
 
 add_executable(System_Monitor main.cpp
-    PCinfo.cpp)
+    PCinfo.cpp
+    consoleView.cpp)
 
 target_link_libraries(System_Monitor Psapi.lib)
