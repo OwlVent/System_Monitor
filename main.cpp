@@ -1,5 +1,7 @@
 #include <iostream>
 #include <windows.h>
+#include <psapi.h>
+#include <vector>
 
 using namespace std;
 
@@ -87,6 +89,23 @@ int main() {
 
         cout << "\n------Time: Information------" << endl;
         cout << "The computer is on: " << hours << " hr, " << minutes << " min, " << seconds << " sec" << endl;
+
+        cout << "\n------Processes: Information------" << endl;
+        DWORD processIds[1024];
+        DWORD bytesReturned;
+
+        if (!EnumProcesses(processIds, sizeof(processIds), &bytesReturned)){
+            cout << "Error to enumerate processes" << endl;
+            return 1;
+        }
+
+        int count = bytesReturned / sizeof(DWORD);
+
+        cout << "Found " << count << " running processes" << endl;
+
+        for (int i = 0; i < 10 && i < count; i++){
+            cout << "Processes ID: " << processIds[i] << endl;
+        }
 
         Sleep(10000);
         system("cls");

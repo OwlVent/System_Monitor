@@ -1,8 +1,8 @@
 ================================================================================
 Linker Errors
-Generated: 2026-05-25T10:48:25.759Z
+Generated: 2026-05-25T18:57:31.576Z
 Total Errors: 1
 ================================================================================
 
-[LNK1168] (MSVC)
-cannot open C:\Users\vento\OneDrive\Documents\vs_project\System_Monitor\build\Debug\System_Monitor.exe for writing [C:\Users\vento\OneDrive\Documents\vs_project\System_Monitor\build\System_Monitor.vcxproj]
+[LNK1104] (MSVC)
+cannot open file 'Psapi.h.lib' [C:\Users\vento\OneDrive\Documents\vs_project\System_Monitor\build\System_Monitor.vcxproj]
