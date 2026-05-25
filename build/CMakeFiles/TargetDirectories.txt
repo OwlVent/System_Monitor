@@ -1,3 +1,0 @@
-C:/Users/vento/OneDrive/Documents/vs_project/System_Monitor/build/CMakeFiles/System_Monitor.dir
-C:/Users/vento/OneDrive/Documents/vs_project/System_Monitor/build/CMakeFiles/ALL_BUILD.dir
-C:/Users/vento/OneDrive/Documents/vs_project/System_Monitor/build/CMakeFiles/ZERO_CHECK.dir
