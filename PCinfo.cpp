@@ -7,6 +7,8 @@
 
 using namespace std;
 
+static const float GB = 1024 * 1024 * 1024.0f;
+
 unsigned long long FileTimeToInt64(const FILETIME& ft);
 
 string getUsernameInfo(){
@@ -27,8 +29,6 @@ void getRAMInfo(){
     memInfo.dwLength = sizeof(MEMORYSTATUSEX);
 
     if (GlobalMemoryStatusEx(&memInfo)) {
-        const float GB = 1024 * 1024 * 1024.0f;
-
         cout << "\n------Memory: Information------" << endl;
         cout << "Memory Load: " << memInfo.dwMemoryLoad << "%" << endl;
         cout << "Total Physical RAM: " << memInfo.ullTotalPhys / GB << " GB" << endl;
@@ -40,43 +40,55 @@ void getRAMInfo(){
 }
 
 void getCPUInfo(){
+   static unsigned long long preIdle = 0;   
+    static unsigned long long preKernel = 0;
+    static unsigned long long preUser = 0;
+    static bool firstCall = true;
+
     FILETIME idleTime, kernelTime, userTime;
+    if (!GetSystemTimes(&idleTime, &kernelTime, &userTime)) {
+        cerr << "Error getting CPU times" << endl;
+        return;
+    }
+
+    unsigned long long currentIdle = FileTimeToInt64(idleTime);
+    unsigned long long currentKernel = FileTimeToInt64(kernelTime);
+    unsigned long long currentUser = FileTimeToInt64(userTime);
+
+    if (firstCall){
+        preIdle = currentIdle;
+        preKernel = currentKernel;
+        preUser = currentUser;
+        firstCall = false;
         
-    GetSystemTimes(&idleTime, &kernelTime, &userTime);
+        cout << "\n------CPU: Information------" << endl;
+        cout << "CPU Load: Calculating..." << endl;
+        return;
+    }
 
-    unsigned long long preIdle = FileTimeToInt64(idleTime);   
-    unsigned long long preKernel = FileTimeToInt64(kernelTime);
-    unsigned long long preUser = FileTimeToInt64(userTime);
-    
-    Sleep(1000);
-
-    GetSystemTimes(&idleTime, &kernelTime, &userTime);
-
-    unsigned long long postIdle = FileTimeToInt64(idleTime);   
-    unsigned long long postKernel = FileTimeToInt64(kernelTime);
-    unsigned long long postUser = FileTimeToInt64(userTime);
-
-    unsigned long long deltaIdle = postIdle - preIdle;
-    unsigned long long deltaKernel = postKernel - preKernel;
-    unsigned long long deltaUser = postUser - preUser;
+    unsigned long long deltaIdle = currentIdle - preIdle;
+    unsigned long long deltaKernel = currentKernel - preKernel;
+    unsigned long long deltaUser = currentUser - preUser;
 
     unsigned long long totalSystemTime = deltaKernel + deltaUser;
 
+    cout << "\n------CPU: Information------" << endl;
     if (totalSystemTime > 0) {
-        cout << "\n------CPU: Information------" << endl;
         double cpuLoad = (double)(totalSystemTime - deltaIdle) * 100.0 / totalSystemTime;
-        cout << "\nCPU Load: " << cpuLoad << "%" << endl;
+        cout << "CPU Load: " << cpuLoad << "%" << endl;
     } else {
-        cerr << "Error: could not get CPU info. Code: " << GetLastError() << endl;
+        cout << "CPU Load: 0.00%" << endl;
     }
+
+    preIdle = currentIdle;
+    preKernel = currentKernel;
+    preUser = currentUser;
 }
 
 void getDiskInfo(){
     ULARGE_INTEGER freeBytesAvailable, totalNumberOfBytes, totalNumberOfFreeBytes;
 
     if (GetDiskFreeSpaceExA("C:\\", &freeBytesAvailable, &totalNumberOfBytes, &totalNumberOfFreeBytes)){ 
-        const float GB = 1024 * 1024 * 1024.0f;
-
         cout << "\n------Disk C: Information------" << endl;
         cout << "Total size: " << totalNumberOfBytes.QuadPart / GB << "GB" << endl;
         cout << "Free space: " << totalNumberOfFreeBytes.QuadPart / GB << "GB" << endl;
@@ -90,11 +102,16 @@ void getDiskInfo(){
 }
 
 void getUptimeInfo(){
-    ULONGLONG uptime = GetTickCount64() / 1000;
-    ULONGLONG days = uptime / 3600 / 24;
+    ULONGLONG totalSeconds = GetTickCount64() / 1000;
+    
+    ULONGLONG seconds = totalSeconds % 60;
+    ULONGLONG minutes = (totalSeconds / 60) % 60;
+    ULONGLONG hours = (totalSeconds / 3600) % 24;
+    ULONGLONG days = totalSeconds / (3600 * 24);
+
     cout << "\n------ Uptime ------" << endl;
     if (days > 0) cout << days << " days, ";
-    cout << uptime / 3600 % 24 << "h " << (uptime % 3600) / 60 << "m " << uptime % 60 << "s" << endl;
+    cout << hours << "h " << minutes << "m " << seconds << "s" << endl;
 }
 
 void getProcessesInfo(){
@@ -107,6 +124,9 @@ void getProcessesInfo(){
     }
 
     int count = bytesReturned / sizeof(DWORD);
+    if (bytesReturned == sizeof(processIds)) {
+        cout << " (Warning: Buffer full, maybe more processes exist)" << endl;
+    }
 
     cout << "Found " << count << " running processes" << endl;
 

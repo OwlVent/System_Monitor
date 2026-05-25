@@ -1,6 +1,5 @@
 #include <iostream>
 #include <windows.h>
-#include <psapi.h>
 #include <vector>
 #include <iomanip>
 
@@ -14,22 +13,13 @@ int main() {
     while (true){
         cout << "Logged in as: " << getUsernameInfo() << endl;
 
-        // ---- Блок RAM ----
         getRAMInfo();
-        
-        // ---- Блок CPU ----
         getCPUInfo();
-
-        // ---- Блок DISK ----
         getDiskInfo();
-
-        // ---- Блок UPTIME ----
         getUptimeInfo();
-
-        // ---- Блок PROCESSES ---- 
         getProcessesInfo();
 
-        Sleep(2000);
+        Sleep(1000);
         system("cls");
     }
     return 0;
