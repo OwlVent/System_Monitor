@@ -71,6 +71,24 @@ void getCPUInfo(){
     }
 }
 
+void getDiskInfo(){
+    ULARGE_INTEGER freeBytesAvailable, totalNumberOfBytes, totalNumberOfFreeBytes;
+
+    if (GetDiskFreeSpaceExA("C:\\", &freeBytesAvailable, &totalNumberOfBytes, &totalNumberOfFreeBytes)){ 
+        const float GB = 1024 * 1024 * 1024.0f;
+
+        cout << "\n------Disk C: Information------" << endl;
+        cout << "Total size: " << totalNumberOfBytes.QuadPart / GB << "GB" << endl;
+        cout << "Free space: " << totalNumberOfFreeBytes.QuadPart / GB << "GB" << endl;
+        cout << "Available for you: " << freeBytesAvailable.QuadPart / GB << "GB" << endl;
+
+        double usedPercentage = 100.0 - (double)totalNumberOfFreeBytes.QuadPart * 100.0 / totalNumberOfBytes.QuadPart;
+        cout << "Disk usage: " << usedPercentage << "%" << endl;
+    } else {
+        cerr << "Error: could not get disk info. Code: " << GetLastError() << endl;
+    }
+}
+
 unsigned long long FileTimeToInt64(const FILETIME& ft){
     return (((unsigned long long)ft.dwHighDateTime) << 32) | ft.dwLowDateTime;
 }

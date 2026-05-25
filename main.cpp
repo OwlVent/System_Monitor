@@ -19,23 +19,9 @@ int main() {
         
         // ---- Блок CPU ----
         getCPUInfo();
-        
+
         // ---- Блок DISK ----
-        ULARGE_INTEGER freeBytesAvailable, totalNumberOfBytes, totalNumberOfFreeBytes;
-
-        if (GetDiskFreeSpaceExA("C:\\", &freeBytesAvailable, &totalNumberOfBytes, &totalNumberOfFreeBytes)){ 
-            const float GB = 1024 * 1024 * 1024.0f;
-
-            cout << "\n------Disk C: Information------" << endl;
-            cout << "Total size: " << totalNumberOfBytes.QuadPart / GB << "GB" << endl;
-            cout << "Free space: " << totalNumberOfFreeBytes.QuadPart / GB << "GB" << endl;
-            cout << "Available for you: " << freeBytesAvailable.QuadPart / GB << "GB" << endl;
-
-            double usedPercentage = 100.0 - (double)totalNumberOfFreeBytes.QuadPart * 100.0 / totalNumberOfBytes.QuadPart;
-            cout << "Disk usage: " << usedPercentage << "%" << endl;
-        } else {
-            cerr << "Error: could not get disk info. Code: " << GetLastError() << endl;
-        }
+        getDiskInfo();
 
         // ---- Блок UPTIME ----
         ULONGLONG uptime = GetTickCount64() / 1000;
