@@ -97,6 +97,24 @@ void getUptimeInfo(){
     cout << uptime / 3600 % 24 << "h " << (uptime % 3600) / 60 << "m " << uptime % 60 << "s" << endl;
 }
 
+void getProcessesInfo(){
+    cout << "\n------Processes: Information------" << endl;
+    DWORD processIds[1024];
+    DWORD bytesReturned;
+
+    if (!EnumProcesses(processIds, sizeof(processIds), &bytesReturned)){
+        cout << "Error to enumerate processes" << endl;
+    }
+
+    int count = bytesReturned / sizeof(DWORD);
+
+    cout << "Found " << count << " running processes" << endl;
+
+    for (int i = 0; i < 10 && i < count; i++){
+        cout << "Processes ID: " << processIds[i] << endl;
+    }
+}
+
 unsigned long long FileTimeToInt64(const FILETIME& ft){
     return (((unsigned long long)ft.dwHighDateTime) << 32) | ft.dwLowDateTime;
 }

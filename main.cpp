@@ -27,22 +27,7 @@ int main() {
         getUptimeInfo();
 
         // ---- Блок PROCESSES ---- 
-        cout << "\n------Processes: Information------" << endl;
-        DWORD processIds[1024];
-        DWORD bytesReturned;
-
-        if (!EnumProcesses(processIds, sizeof(processIds), &bytesReturned)){
-            cout << "Error to enumerate processes" << endl;
-            return 1;
-        }
-
-        int count = bytesReturned / sizeof(DWORD);
-
-        cout << "Found " << count << " running processes" << endl;
-
-        for (int i = 0; i < 10 && i < count; i++){
-            cout << "Processes ID: " << processIds[i] << endl;
-        }
+        getProcessesInfo();
 
         Sleep(2000);
         system("cls");
