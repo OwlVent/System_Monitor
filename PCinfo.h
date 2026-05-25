@@ -2,3 +2,4 @@
 #include <string>
 
 std::string getUsernameInfo();
+void getRAMInfo();
