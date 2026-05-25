@@ -18,8 +18,8 @@ int main() {
         getRAMInfo();
         
         // ---- Блок CPU ----
-        
         getCPUInfo();
+        
         // ---- Блок DISK ----
         ULARGE_INTEGER freeBytesAvailable, totalNumberOfBytes, totalNumberOfFreeBytes;
 
