@@ -11,6 +11,20 @@ unsigned long long FileTimeToInt64(const FILETIME& ft){
 
 int main() {
     while (true){
+        DWORD size = 0;
+        GetUserNameA(NULL, &size);
+
+        if (size == 0) {
+            cerr << "Unable to determine username size" << endl;
+            return 1;
+        }
+
+        string name(size, '\0');
+        if(GetUserNameA(&name[0], &size)){
+            name.resize(size - 1);
+            cout << "PC name: " << name << endl;
+        }
+
         // Используем структуру MEMORYSTATUSEX для получения информации о состоянии памяти
         MEMORYSTATUSEX memInfo;
 
