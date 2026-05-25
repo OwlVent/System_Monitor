@@ -19,6 +19,7 @@ int main() {
             // Константа для перевода байтов в гигабайты
             const float GB = 1024 * 1024 * 1024.0f;
 
+            cout << "\n------Memory: Information------" << endl;
             cout << "Memory Load: " << memInfo.dwMemoryLoad << "%" << endl;
             cout << "Total Physical RAM: " << memInfo.ullTotalPhys / GB << " GB" << endl;
             cout << "Free Physical RAM: " << memInfo.ullAvailPhys / GB << " GB" << endl;
@@ -51,11 +52,30 @@ int main() {
         unsigned long long totalSystemTime = deltaKernel + deltaUser;
 
         if (totalSystemTime > 0) {
+            cout << "\n------CPU: Information------" << endl;
             double cpuLoad = (double)(totalSystemTime - deltaIdle) * 100.0 / totalSystemTime;
             cout << "\nCPU Load: " << cpuLoad << "%" << endl;
+        } else {
+            cerr << "Error: could not get CPU info. Code: " << GetLastError() << endl;
         }
 
-        Sleep(5000);
+        ULARGE_INTEGER freeBytesAvailable, totalNumberOfBytes, totalNumberOfFreeBytes;
+
+        if (GetDiskFreeSpaceExA("C:\\", &freeBytesAvailable, &totalNumberOfBytes, &totalNumberOfFreeBytes)){ 
+            const float GB = 1024 * 1024 * 1024.0f;
+
+            cout << "\n------Disk C: Information------" << endl;
+            cout << "Total size: " << totalNumberOfBytes.QuadPart / GB << "GB" << endl;
+            cout << "Free space: " << totalNumberOfFreeBytes.QuadPart / GB << "GB" << endl;
+            cout << "Available for you: " << freeBytesAvailable.QuadPart / GB << "GB" << endl;
+
+            double usedPercentage = 100.0 - (double)totalNumberOfFreeBytes.QuadPart * 100.0 / totalNumberOfBytes.QuadPart;
+            cout << "Disk usage: " << usedPercentage << "%" << endl;
+        } else {
+            cerr << "Error: could not get disk info. Code: " << GetLastError() << endl;
+        }
+
+        Sleep(10000);
         system("cls");
     }
     return 0;
