@@ -4,6 +4,8 @@
 #include <vector>
 #include <iomanip>
 
+#include "PCinfo.h"
+
 using namespace std;
 
 unsigned long long FileTimeToInt64(const FILETIME& ft){
@@ -11,16 +13,10 @@ unsigned long long FileTimeToInt64(const FILETIME& ft){
 }
 
 int main() {
-    DWORD size = 0;
-    GetUserNameA(NULL, &size);
-    string name(size, '\0');
-    GetUserNameA(&name[0], &size);
-    if (!name.empty()) name.resize(size - 1);
-
     cout << fixed << setprecision(2);
 
     while (true){
-        cout << "Logged in as: " << name << endl;
+        cout << "Logged in as: " << getUsernameInfo() << endl;
 
         // ---- Блок RAM ----
         MEMORYSTATUSEX memInfo;

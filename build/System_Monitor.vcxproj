@@ -357,6 +357,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="C:\Users\vento\OneDrive\Documents\vs_project\System_Monitor\main.cpp" />
+    <ClCompile Include="C:\Users\vento\OneDrive\Documents\vs_project\System_Monitor\PCinfo.cpp" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
