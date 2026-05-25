@@ -8,10 +8,6 @@
 
 using namespace std;
 
-unsigned long long FileTimeToInt64(const FILETIME& ft){
-    return (((unsigned long long)ft.dwHighDateTime) << 32) | ft.dwLowDateTime;
-}
-
 int main() {
     cout << fixed << setprecision(2);
 
@@ -22,36 +18,8 @@ int main() {
         getRAMInfo();
         
         // ---- Блок CPU ----
-        FILETIME idleTime, kernelTime, userTime;
         
-        GetSystemTimes(&idleTime, &kernelTime, &userTime);
-
-        unsigned long long preIdle = FileTimeToInt64(idleTime);   
-        unsigned long long preKernel = FileTimeToInt64(kernelTime);
-        unsigned long long preUser = FileTimeToInt64(userTime);
-        
-        Sleep(1000);
-
-        GetSystemTimes(&idleTime, &kernelTime, &userTime);
-
-        unsigned long long postIdle = FileTimeToInt64(idleTime);   
-        unsigned long long postKernel = FileTimeToInt64(kernelTime);
-        unsigned long long postUser = FileTimeToInt64(userTime);
-
-        unsigned long long deltaIdle = postIdle - preIdle;
-        unsigned long long deltaKernel = postKernel - preKernel;
-        unsigned long long deltaUser = postUser - preUser;
-
-        unsigned long long totalSystemTime = deltaKernel + deltaUser;
-
-        if (totalSystemTime > 0) {
-            cout << "\n------CPU: Information------" << endl;
-            double cpuLoad = (double)(totalSystemTime - deltaIdle) * 100.0 / totalSystemTime;
-            cout << "\nCPU Load: " << cpuLoad << "%" << endl;
-        } else {
-            cerr << "Error: could not get CPU info. Code: " << GetLastError() << endl;
-        }
-
+        getCPUInfo();
         // ---- Блок DISK ----
         ULARGE_INTEGER freeBytesAvailable, totalNumberOfBytes, totalNumberOfFreeBytes;
 

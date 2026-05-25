@@ -3,3 +3,4 @@
 
 std::string getUsernameInfo();
 void getRAMInfo();
+void getCPUInfo();
