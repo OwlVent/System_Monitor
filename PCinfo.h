@@ -5,3 +5,4 @@ std::string getUsernameInfo();
 void getRAMInfo();
 void getCPUInfo();
 void getDiskInfo();
+void getUptimeInfo();

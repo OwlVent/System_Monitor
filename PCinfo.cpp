@@ -89,6 +89,14 @@ void getDiskInfo(){
     }
 }
 
+void getUptimeInfo(){
+    ULONGLONG uptime = GetTickCount64() / 1000;
+    ULONGLONG days = uptime / 3600 / 24;
+    cout << "\n------ Uptime ------" << endl;
+    if (days > 0) cout << days << " days, ";
+    cout << uptime / 3600 % 24 << "h " << (uptime % 3600) / 60 << "m " << uptime % 60 << "s" << endl;
+}
+
 unsigned long long FileTimeToInt64(const FILETIME& ft){
     return (((unsigned long long)ft.dwHighDateTime) << 32) | ft.dwLowDateTime;
 }

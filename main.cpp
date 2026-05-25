@@ -24,11 +24,7 @@ int main() {
         getDiskInfo();
 
         // ---- Блок UPTIME ----
-        ULONGLONG uptime = GetTickCount64() / 1000;
-        ULONGLONG days = uptime / 3600 / 24;
-        cout << "\n------ Uptime ------" << endl;
-        if (days > 0) cout << days << " days, ";
-        cout << uptime / 3600 % 24 << "h " << (uptime % 3600) / 60 << "m " << uptime % 60 << "s" << endl;
+        getUptimeInfo();
 
         // ---- Блок PROCESSES ---- 
         cout << "\n------Processes: Information------" << endl;
