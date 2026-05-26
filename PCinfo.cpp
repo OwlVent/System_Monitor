@@ -1,4 +1,6 @@
 #include "PCinfo.h"
+#include "consoleView.h"
+
 #include <iostream>
 #include <windows.h>
 #include <psapi.h>
@@ -29,18 +31,19 @@ void getRAMInfo(){
     memInfo.dwLength = sizeof(MEMORYSTATUSEX);
 
     if (GlobalMemoryStatusEx(&memInfo)) {
-        cout << "\n------Memory: Information------" << endl;
-        cout << "Memory Load: " << memInfo.dwMemoryLoad << "%" << endl;
-        cout << "Total Physical RAM: " << memInfo.ullTotalPhys / GB << " GB" << endl;
-        cout << "Free Physical RAM: " << memInfo.ullAvailPhys / GB << " GB" << endl;
-        cout << "Used Physical RAM: " << (memInfo.ullTotalPhys - memInfo.ullAvailPhys) / GB << " GB" << endl;
+        double total = (double)memInfo.ullTotalPhys / GB;
+        double load = (double)memInfo.ullAvailPhys / GB;
+        double used = total - load;
+        double loadPercent = (double)memInfo.dwMemoryLoad;
+
+        renderMemoryInfo(loadPercent, used, total);
     } else {
         cerr << "Error getting memory status. Error code: " << GetLastError() << endl;
     }
 }
 
 void getCPUInfo(){
-   static unsigned long long preIdle = 0;   
+    static unsigned long long preIdle = 0;   
     static unsigned long long preKernel = 0;
     static unsigned long long preUser = 0;
     static bool firstCall = true;
@@ -61,8 +64,7 @@ void getCPUInfo(){
         preUser = currentUser;
         firstCall = false;
         
-        cout << "\n------CPU: Information------" << endl;
-        cout << "CPU Load: Calculating..." << endl;
+        cout << "\nCPU Load: Calculating..." << endl;
         return;
     }
 
@@ -72,10 +74,9 @@ void getCPUInfo(){
 
     unsigned long long totalSystemTime = deltaKernel + deltaUser;
 
-    cout << "\n------CPU: Information------" << endl;
     if (totalSystemTime > 0) {
         double cpuLoad = (double)(totalSystemTime - deltaIdle) * 100.0 / totalSystemTime;
-        cout << "CPU Load: " << cpuLoad << "%                " << endl;
+        renderCPUInfo(cpuLoad);
     } else {
         cout << "CPU Load: 0.00%" << endl;
     }
@@ -89,13 +90,12 @@ void getDiskInfo(){
     ULARGE_INTEGER freeBytesAvailable, totalNumberOfBytes, totalNumberOfFreeBytes;
 
     if (GetDiskFreeSpaceExA("C:\\", &freeBytesAvailable, &totalNumberOfBytes, &totalNumberOfFreeBytes)){ 
-        cout << "\n------Disk C: Information------" << endl;
-        cout << "Total size: " << totalNumberOfBytes.QuadPart / GB << "GB" << endl;
-        cout << "Free space: " << totalNumberOfFreeBytes.QuadPart / GB << "GB" << endl;
-        cout << "Available for you: " << freeBytesAvailable.QuadPart / GB << "GB" << endl;
+        double total = (double)totalNumberOfBytes.QuadPart / GB;
+        double free = (double)totalNumberOfFreeBytes.QuadPart / GB;
+        double used = total - free;
+        double usedPercentage = (used / total) * 100.0;
 
-        double usedPercentage = 100.0 - (double)totalNumberOfFreeBytes.QuadPart * 100.0 / totalNumberOfBytes.QuadPart;
-        cout << "Disk usage: " << usedPercentage << "%" << endl;
+        renderDiskInfo(usedPercentage, used, total);
     } else {
         cerr << "Error: could not get disk info. Code: " << GetLastError() << endl;
     }
@@ -109,30 +109,28 @@ void getUptimeInfo(){
     ULONGLONG hours = (totalSeconds / 3600) % 24;
     ULONGLONG days = totalSeconds / (3600 * 24);
 
-    cout << "\n------ Uptime ------" << endl;
-    if (days > 0) cout << days << " days, ";
-    cout << hours << "h " << minutes << "m " << seconds << "s" << endl;
+    renderUptimeInfo(days, hours, minutes, seconds);
 }
 
 void getProcessesInfo(){
-    cout << "\n------Processes: Information------" << endl;
     DWORD processIds[1024];
     DWORD bytesReturned;
 
     if (!EnumProcesses(processIds, sizeof(processIds), &bytesReturned)){
         cout << "Error to enumerate processes" << endl;
+        return; 
     }
 
     int count = bytesReturned / sizeof(DWORD);
-    if (bytesReturned == sizeof(processIds)) {
-        cout << " (Warning: Buffer full, maybe more processes exist)" << endl;
+
+    vector<DWORD> topPids;
+    int limit = (count > 5) ? 5 : count;
+
+    for (int i = 0; i < limit; i++) {
+        topPids.push_back(processIds[i]);
     }
 
-    cout << "Found " << count << " running processes" << endl;
-
-    for (int i = 0; i < 10 && i < count; i++){
-        cout << "Processes ID: " << processIds[i] << endl;
-    }
+    renderProcessesInfo(count, topPids);
 }
 
 unsigned long long FileTimeToInt64(const FILETIME& ft){
