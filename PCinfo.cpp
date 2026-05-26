@@ -121,18 +121,15 @@ void getProcessesInfo(){
         return; 
     }
 
-    // 1. Считаем общее количество процессов
     int count = bytesReturned / sizeof(DWORD);
 
-    // 2. Создаем вектор для хранения "верхушки" списка (например, первых 10)
     vector<DWORD> topPids;
-    int limit = (count > 5) ? 5 : count; // Берем 10 или меньше, если процессов мало
+    int limit = (count > 5) ? 5 : count;
 
     for (int i = 0; i < limit; i++) {
         topPids.push_back(processIds[i]);
     }
 
-    // 3. Теперь передаем правильные типы данных
     renderProcessesInfo(count, topPids);
 }
 
