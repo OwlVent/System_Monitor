@@ -9,19 +9,28 @@
 using namespace std;
 
 int main() {
+    SetConsoleOutputCP(CP_UTF8);
+    
+    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    DWORD dwMode = 0;
+    GetConsoleMode(hOut, &dwMode);
+    dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+    SetConsoleMode(hOut, dwMode);
+
     hideCursor();
     cout << fixed << setprecision(2);
     system("cls");
 
     while (true){
         setCursorPosition(0, 0);
-        cout << "Logged in as: " << getUsernameInfo() << "                " << endl;
+        cout << "Logged " << RED << "in as " << RESET << getUsernameInfo() << "                " << endl;
+        cout << endl;
 
         getRAMInfo();
         getCPUInfo();
         getDiskInfo();
         getUptimeInfo();
-        getProcessesInfo();
+        //getProcessesInfo();
 
         Sleep(1000);
     }
