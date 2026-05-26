@@ -3,6 +3,7 @@
 #include <iostream> 
 #include <iomanip>
 #include <format>
+#include <vector>
 
 using namespace std;
 
@@ -59,6 +60,15 @@ void renderUptimeInfo(unsigned long long days, unsigned long long hours, unsigne
     if (days > 0) cout << format("{} days, ",days);
     cout << format("{} hr {} min {} s{:<15}", hours, minutes, seconds, "");
     cout << format("\n{}└{:-<37}", CYAN, "-");
+}
+
+void renderProcessesInfo(int count, const std::vector<DWORD>& topPids) {
+    cout << format("\n{}┌── Processes {:-<24}\n", CYAN, "");
+    cout << format("│  {}Active: {:<5} {:<50}\n", RESET, count, "");
+    cout << format("{}│{}", CYAN, RESET);
+    cout << "  Top PIDs: ";
+    for (auto pid : topPids) cout << pid << " ";
+    cout << format("{:<10}\n{}└{:-<37}", "", CYAN, "-");
 }
 
 void renderBodyRAMDisk(double load, double used, double total){

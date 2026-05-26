@@ -91,11 +91,11 @@ void getDiskInfo(){
 
     if (GetDiskFreeSpaceExA("C:\\", &freeBytesAvailable, &totalNumberOfBytes, &totalNumberOfFreeBytes)){ 
         double total = (double)totalNumberOfBytes.QuadPart / GB;
-        double load = (double)totalNumberOfFreeBytes.QuadPart / GB;
-        double used = (double)freeBytesAvailable.QuadPart / GB;
-        double usedPercentage = 100.0 - load * 100.0 / total;
+        double free = (double)totalNumberOfFreeBytes.QuadPart / GB;
+        double used = total - free;
+        double usedPercentage = (used / total) * 100.0;
 
-        renderDiskInfo(usedPercentage, load, total);
+        renderDiskInfo(usedPercentage, used, total);
     } else {
         cerr << "Error: could not get disk info. Code: " << GetLastError() << endl;
     }
@@ -113,24 +113,27 @@ void getUptimeInfo(){
 }
 
 void getProcessesInfo(){
-    cout << "\n------Processes: Information------" << endl;
     DWORD processIds[1024];
     DWORD bytesReturned;
 
     if (!EnumProcesses(processIds, sizeof(processIds), &bytesReturned)){
         cout << "Error to enumerate processes" << endl;
+        return; 
     }
 
+    // 1. Считаем общее количество процессов
     int count = bytesReturned / sizeof(DWORD);
-    if (bytesReturned == sizeof(processIds)) {
-        cout << " (Warning: Buffer full, maybe more processes exist)" << endl;
+
+    // 2. Создаем вектор для хранения "верхушки" списка (например, первых 10)
+    vector<DWORD> topPids;
+    int limit = (count > 5) ? 5 : count; // Берем 10 или меньше, если процессов мало
+
+    for (int i = 0; i < limit; i++) {
+        topPids.push_back(processIds[i]);
     }
 
-    cout << "Found " << count << " running processes" << endl;
-
-    for (int i = 0; i < 10 && i < count; i++){
-        cout << "Processes ID: " << processIds[i] << endl;
-    }
+    // 3. Теперь передаем правильные типы данных
+    renderProcessesInfo(count, topPids);
 }
 
 unsigned long long FileTimeToInt64(const FILETIME& ft){

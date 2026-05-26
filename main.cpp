@@ -19,18 +19,19 @@ int main() {
     SetConsoleMode(hOut, dwMode);
 
     hideCursor();
-    cout << fixed << setprecision(2);
     system("cls");
+
+    string user = getUsernameInfo();
 
     while (true){
         setCursorPosition(0, 0);
-        cout << format("{}Logged {}in as{}: {}\n\n", RESET, RED, RESET, getUsernameInfo());
+        cout << format("{}Logged {}in as{}: {}\n\n", RESET, RED, RESET, user);
 
         getRAMInfo();
         getCPUInfo();
         getDiskInfo();
         getUptimeInfo();
-        //getProcessesInfo();
+        getProcessesInfo();
 
         Sleep(1000);
     }
