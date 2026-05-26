@@ -2,6 +2,7 @@
 #include <windows.h>
 #include <vector>
 #include <iomanip>
+#include <format>
 
 #include "PCinfo.h"
 #include "consoleView.h"
@@ -23,8 +24,7 @@ int main() {
 
     while (true){
         setCursorPosition(0, 0);
-        cout << "Logged " << RED << "in as " << RESET << getUsernameInfo() << "                " << endl;
-        cout << endl;
+        cout << format("{}Logged {}in as{}: {}\n\n", RESET, RED, RESET, getUsernameInfo());
 
         getRAMInfo();
         getCPUInfo();

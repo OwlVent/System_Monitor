@@ -64,7 +64,7 @@ void getCPUInfo(){
         preUser = currentUser;
         firstCall = false;
         
-        cout << "CPU Load: Calculating..." << endl;
+        cout << "\nCPU Load: Calculating..." << endl;
         return;
     }
 

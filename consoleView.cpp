@@ -2,8 +2,11 @@
 #include <windows.h>
 #include <iostream> 
 #include <iomanip>
+#include <format>
 
 using namespace std;
+
+void renderBodyRAMDisk(double load, double used, double total);
 
 void setCursorPosition(int x, int y) {
     HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -36,37 +39,29 @@ void drawProgressBar(double percentage, int width){
 }
 
 void renderMemoryInfo(double load, double used, double total){
-    cout << "┌── RAM " << string(32, '-') << RESET << endl;
-    cout << "│  Usage: "; 
-    drawProgressBar(load); 
-    cout << endl;
-    cout << "│  Detailed: " << used << " GB / " << total << " GB" << endl;
-    cout << "└" << string(39, '-') << RESET << endl;
+    cout << format("{}┌── RAM {:-<30}\n│  {}Usage: ", CYAN, "", RESET);
+    renderBodyRAMDisk(load, used, total);
 }
 
 void renderCPUInfo(double percentage){
-    cout << "┌── CPU " << string(32, '-') << RESET << endl;
-    cout << "│  Usage: "; 
-    drawProgressBar(percentage); 
-    cout << endl;
-    cout << "└" << string(39, '-') << RESET << endl;
+    cout << format("\n{}┌── CPU {:-<30}\n│  {}Usage: ", CYAN, "", RESET);
+    drawProgressBar(percentage);
+    cout << format("\n{}└{:-<20}", CYAN, "-");
 }
 
 void renderDiskInfo(double load, double used, double total){
-    cout << "┌── Disk C " << string(30, '-') << RESET << endl;
-    cout << "│  Usage: "; 
-    drawProgressBar(load); 
-    cout << endl;
-    cout << "│  Detailed: " << used << " GB / " << total << " GB                 " << endl;
-    cout << "└" << string(39, '-') << RESET << endl;
+    cout << format("\n{}┌── Disk {:-<29}\n│  {}Usage: ", CYAN, "", RESET);
+    renderBodyRAMDisk(load, used, total);
 }
 
 void renderUptimeInfo(unsigned long long days, unsigned long long hours, unsigned long long minutes, unsigned long long seconds){
-    cout << "┌── CPU " << string(32, '-') << RESET << endl;
-    cout << "│  PC work: ";
-    if (days > 0) cout << days << " days, ";
-    cout << hours << " hr " << minutes << " min " << seconds << " s                  " << endl;
-    cout << "└" << string(39, '-') << RESET << endl;
+    cout << format("\n{}┌── Uptime {:-<27}\n│  {}PC work: ", CYAN, "", RESET);
+    if (days > 0) cout << format("{} days, ",days);
+    cout << format("{} hr {} min {} s{:<15}", hours, minutes, seconds, "");
+    cout << format("\n{}└{:-<37}", CYAN, "-");
 }
 
-// if (days > 0) cout << days << " days, ";
+void renderBodyRAMDisk(double load, double used, double total){
+    drawProgressBar(load); 
+    cout << format("{}\n│  {}Detailed: {:.2f} GB / {:.2f} GB{:<10}\n{}└{:-<37}", CYAN, RESET, used, total, "", CYAN, "");
+}
